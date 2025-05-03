@@ -1,5 +1,5 @@
 
-import { GrantApplicationForm } from "@/components/GrantApplicationForm";
+import GrantApplicationForm from "@/components/GrantApplicationForm";
 
 const Index = () => {
   return (

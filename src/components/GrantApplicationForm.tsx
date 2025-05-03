@@ -30,6 +30,7 @@ const GrantApplicationForm = () => {
     accountNumber: "",
     accountName: "",
     bank: "",
+    amount: "",
     reason: "",
   });
 
@@ -61,6 +62,7 @@ const GrantApplicationForm = () => {
       "accountNumber",
       "accountName",
       "bank",
+      "amount",
       "reason",
     ];
 
@@ -73,6 +75,17 @@ const GrantApplicationForm = () => {
         });
         return false;
       }
+    }
+
+    // Validate amount is within range
+    const amountValue = Number(formData.amount);
+    if (isNaN(amountValue) || amountValue < 20000 || amountValue > 100000) {
+      toast({
+        title: "Invalid amount",
+        description: "Please enter an amount between ₦20,000 and ₦100,000",
+        variant: "destructive",
+      });
+      return false;
     }
 
     if (!formData.passport) {
@@ -230,6 +243,22 @@ const GrantApplicationForm = () => {
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="amount">Grant Amount (₦20,000 - ₦100,000)</Label>
+        <Input
+          id="amount"
+          name="amount"
+          type="number"
+          min="20000"
+          max="100000"
+          placeholder="Enter amount between ₦20,000 - ₦100,000"
+          className="bg-white"
+          value={formData.amount}
+          onChange={handleInputChange}
+          required
+        />
       </div>
 
       <div className="space-y-2">

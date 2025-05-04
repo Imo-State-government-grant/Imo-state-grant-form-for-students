@@ -1,7 +1,7 @@
 
-import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { getSupabaseClient, isSupabaseConnected } from "@/lib/supabase";
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export type GrantFormData = {
   fullName: string;
@@ -38,6 +38,18 @@ export const useGrantForm = () => {
     amount: "",
     reason: "",
   });
+
+  // Prefill email if user is logged in
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data.user?.email) {
+        setFormData((prev) => ({ ...prev, email: data.user!.email! }));
+      }
+    };
+    
+    getUser();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

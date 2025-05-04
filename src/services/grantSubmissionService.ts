@@ -1,6 +1,6 @@
 
 import { GrantFormData } from "@/hooks/useGrantForm";
-import { getSupabaseClient, isSupabaseConnected } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { ToastFunction } from "@/types/toast";
 
 export const submitGrantApplication = async (
@@ -8,19 +8,18 @@ export const submitGrantApplication = async (
   toast: ToastFunction
 ): Promise<boolean> => {
   try {
-    // Check if Supabase is connected before proceeding
-    if (!isSupabaseConnected()) {
+    const session = await supabase.auth.getSession();
+    const user = session.data.session?.user;
+    
+    if (!user) {
       toast({
-        title: "Supabase Not Connected",
-        description: "Please connect to Supabase to submit your application.",
+        title: "Authentication Required",
+        description: "Please login to submit your application",
         variant: "destructive",
       });
       return false;
     }
-    
-    // Get the Supabase client safely
-    const supabase = getSupabaseClient();
-    
+
     // Upload passport photo to Supabase Storage
     let passportUrl = "";
     if (formData.passport) {
@@ -37,13 +36,20 @@ export const submitGrantApplication = async (
         throw fileError;
       }
       
-      passportUrl = fileData.path;
+      // Get the public URL for the uploaded file
+      const { data: urlData } = supabase
+        .storage
+        .from('passports')
+        .getPublicUrl(fileData.path);
+        
+      passportUrl = urlData.publicUrl;
     }
     
     // Save application data to Supabase
     const { error } = await supabase
       .from('grant_applications')
       .insert({
+        user_id: user.id,
         full_name: formData.fullName,
         phone_number: formData.phoneNumber,
         email: formData.email,

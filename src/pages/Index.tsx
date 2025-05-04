@@ -1,8 +1,30 @@
 
 import GrantApplicationForm from "@/components/GrantApplicationForm";
 import Navigation from "@/components/Navigation";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        navigate('/auth');
+      }
+      setLoading(false);
+    };
+    
+    checkUser();
+  }, [navigate]);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Watermark */}

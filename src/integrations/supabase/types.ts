@@ -9,7 +9,81 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      grant_applications: {
+        Row: {
+          account_name: string
+          account_number: string
+          amount: number
+          bank: string
+          bvn: string
+          email: string
+          full_name: string
+          id: string
+          nin: string
+          passport_url: string | null
+          payment_amount: number | null
+          payment_date: string | null
+          payment_reference: string | null
+          payment_status: string | null
+          phone_number: string
+          reason: string
+          school_name: string
+          status: string | null
+          study_level: string
+          submitted_at: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          account_name: string
+          account_number: string
+          amount: number
+          bank: string
+          bvn: string
+          email: string
+          full_name: string
+          id?: string
+          nin: string
+          passport_url?: string | null
+          payment_amount?: number | null
+          payment_date?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          phone_number: string
+          reason: string
+          school_name: string
+          status?: string | null
+          study_level: string
+          submitted_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          account_name?: string
+          account_number?: string
+          amount?: number
+          bank?: string
+          bvn?: string
+          email?: string
+          full_name?: string
+          id?: string
+          nin?: string
+          passport_url?: string | null
+          payment_amount?: number | null
+          payment_date?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          phone_number?: string
+          reason?: string
+          school_name?: string
+          status?: string | null
+          study_level?: string
+          submitted_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

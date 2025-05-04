@@ -6,7 +6,7 @@ import AcademicInfoFields from "./form/AcademicInfoFields";
 import BankInfoFields from "./form/BankInfoFields";
 import FormFooter from "./form/FormFooter";
 import SuccessMessage from "./form/SuccessMessage";
-import { supabaseClient } from "@/lib/supabase";
+import { getSupabaseClient, isSupabaseConnected } from "@/lib/supabase";
 
 const GrantApplicationForm = () => {
   const { toast } = useToast();
@@ -102,6 +102,20 @@ const GrantApplicationForm = () => {
     setIsSubmitting(true);
     
     try {
+      // Check if Supabase is connected before proceeding
+      if (!isSupabaseConnected()) {
+        toast({
+          title: "Supabase Not Connected",
+          description: "Please connect to Supabase to submit your application.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Get the Supabase client safely
+      const supabase = getSupabaseClient();
+      
       // Upload passport photo to Supabase Storage
       let passportUrl = "";
       if (formData.passport) {
@@ -109,7 +123,7 @@ const GrantApplicationForm = () => {
         const fileExt = file.name.split('.').pop();
         const fileName = `${formData.nin}-${Date.now()}.${fileExt}`;
         
-        const { data: fileData, error: fileError } = await supabaseClient
+        const { data: fileData, error: fileError } = await supabase
           .storage
           .from('passports')
           .upload(fileName, file);
@@ -122,7 +136,7 @@ const GrantApplicationForm = () => {
       }
       
       // Save application data to Supabase
-      const { error } = await supabaseClient
+      const { error } = await supabase
         .from('grant_applications')
         .insert({
           full_name: formData.fullName,

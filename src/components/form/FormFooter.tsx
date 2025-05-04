@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import Sponsors from "@/components/Sponsors";
 
 interface FormFooterProps {
   isSubmitting: boolean;
@@ -23,6 +24,8 @@ const FormFooter = ({ isSubmitting }: FormFooterProps) => {
           Sponsored by the Government of Imo State Student Affairs in collaboration with the Imo State Ministry of Education.
         </p>
       </div>
+      
+      <Sponsors />
     </>
   );
 };

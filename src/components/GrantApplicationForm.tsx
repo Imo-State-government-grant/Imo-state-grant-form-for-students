@@ -6,6 +6,7 @@ import AcademicInfoFields from "./form/AcademicInfoFields";
 import BankInfoFields from "./form/BankInfoFields";
 import FormFooter from "./form/FormFooter";
 import SuccessMessage from "./form/SuccessMessage";
+import { supabaseClient } from "@/lib/supabase";
 
 const GrantApplicationForm = () => {
   const { toast } = useToast();
@@ -93,16 +94,56 @@ const GrantApplicationForm = () => {
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
     
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Upload passport photo to Supabase Storage
+      let passportUrl = "";
+      if (formData.passport) {
+        const file = formData.passport;
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${formData.nin}-${Date.now()}.${fileExt}`;
+        
+        const { data: fileData, error: fileError } = await supabaseClient
+          .storage
+          .from('passports')
+          .upload(fileName, file);
+          
+        if (fileError) {
+          throw fileError;
+        }
+        
+        passportUrl = fileData.path;
+      }
+      
+      // Save application data to Supabase
+      const { error } = await supabaseClient
+        .from('grant_applications')
+        .insert({
+          full_name: formData.fullName,
+          phone_number: formData.phoneNumber,
+          email: formData.email,
+          nin: formData.nin,
+          bvn: formData.bvn,
+          school_name: formData.schoolName,
+          study_level: formData.studyLevel,
+          passport_url: passportUrl,
+          account_number: formData.accountNumber,
+          account_name: formData.accountName,
+          bank: formData.bank,
+          amount: Number(formData.amount),
+          reason: formData.reason,
+          status: 'pending',
+          submitted_at: new Date().toISOString()
+        });
+      
+      if (error) throw error;
+      
       setIsSubmitted(true);
       
       toast({
@@ -111,9 +152,17 @@ const GrantApplicationForm = () => {
       });
       
       // In a real app, this would be where you'd send actual SMS and email notifications
-      console.log("SMS sent to:", formData.phoneNumber);
-      console.log("Email sent to:", formData.email);
-    }, 2000);
+      console.log("Application submitted to database for:", formData.phoneNumber);
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      toast({
+        title: "Submission Failed",
+        description: "There was a problem submitting your application. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {

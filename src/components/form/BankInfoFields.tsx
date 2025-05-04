@@ -28,38 +28,38 @@ const BankInfoFields = ({
 }: BankInfoFieldsProps) => {
   return (
     <>
-      <FormSection id="accountNumber" label="Bank Account Number">
+      <FormSection id="accountNumber" label="Bank Account Number" required>
         <Input
           id="accountNumber"
           name="accountNumber"
           placeholder="Enter your account number"
-          className="bg-white"
+          className="bg-white border-gray-300"
           value={formData.accountNumber}
           onChange={handleInputChange}
           required
         />
       </FormSection>
 
-      <FormSection id="accountName" label="Account Name">
+      <FormSection id="accountName" label="Account Name" required>
         <Input
           id="accountName"
           name="accountName"
           placeholder="Enter your account name"
-          className="bg-white"
+          className="bg-white border-gray-300"
           value={formData.accountName}
           onChange={handleInputChange}
           required
         />
       </FormSection>
 
-      <FormSection id="bank" label="Select Bank">
+      <FormSection id="bank" label="Select Bank" required>
         <Select
           name="bank"
           value={formData.bank}
           onValueChange={handleSelectChange("bank")}
           required
         >
-          <SelectTrigger className="bg-white">
+          <SelectTrigger className="bg-white border-gray-300">
             <SelectValue placeholder="Select your bank" />
           </SelectTrigger>
           <SelectContent>

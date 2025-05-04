@@ -17,61 +17,61 @@ interface PersonalInfoFieldsProps {
 const PersonalInfoFields = ({ formData, handleInputChange }: PersonalInfoFieldsProps) => {
   return (
     <>
-      <FormSection id="fullName" label="Full Name">
+      <FormSection id="fullName" label="Full Name" required>
         <Input
           id="fullName"
           name="fullName"
           placeholder="Enter your full name"
-          className="bg-white"
+          className="bg-white border-gray-300"
           value={formData.fullName}
           onChange={handleInputChange}
           required
         />
       </FormSection>
 
-      <FormSection id="phoneNumber" label="Phone Number">
+      <FormSection id="phoneNumber" label="Phone Number" required>
         <Input
           id="phoneNumber"
           name="phoneNumber"
           placeholder="Enter your phone number"
-          className="bg-white"
+          className="bg-white border-gray-300"
           value={formData.phoneNumber}
           onChange={handleInputChange}
           required
         />
       </FormSection>
 
-      <FormSection id="email" label="Email Address">
+      <FormSection id="email" label="Email Address" required>
         <Input
           id="email"
           name="email"
           type="email"
           placeholder="Enter your email address"
-          className="bg-white"
+          className="bg-white border-gray-300"
           value={formData.email}
           onChange={handleInputChange}
           required
         />
       </FormSection>
 
-      <FormSection id="nin" label="National Identification Number (NIN)">
+      <FormSection id="nin" label="National Identification Number (NIN)" required>
         <Input
           id="nin"
           name="nin"
           placeholder="Enter your NIN"
-          className="bg-white"
+          className="bg-white border-gray-300"
           value={formData.nin}
           onChange={handleInputChange}
           required
         />
       </FormSection>
 
-      <FormSection id="bvn" label="Bank Verification Number (BVN)">
+      <FormSection id="bvn" label="Bank Verification Number (BVN)" required>
         <Input
           id="bvn"
           name="bvn"
           placeholder="Enter your BVN"
-          className="bg-white"
+          className="bg-white border-gray-300"
           value={formData.bvn}
           onChange={handleInputChange}
           required

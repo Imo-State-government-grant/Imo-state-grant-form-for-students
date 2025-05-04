@@ -32,26 +32,26 @@ const AcademicInfoFields = ({
 }: AcademicInfoFieldsProps) => {
   return (
     <>
-      <FormSection id="schoolName" label="School Name">
+      <FormSection id="schoolName" label="School Name" required>
         <Input
           id="schoolName"
           name="schoolName"
           placeholder="Enter your school name"
-          className="bg-white"
+          className="bg-white border-gray-300"
           value={formData.schoolName}
           onChange={handleInputChange}
           required
         />
       </FormSection>
 
-      <FormSection id="studyLevel" label="Current Level of Study">
+      <FormSection id="studyLevel" label="Current Level of Study" required>
         <Select
           name="studyLevel"
           value={formData.studyLevel}
           onValueChange={handleSelectChange("studyLevel")}
           required
         >
-          <SelectTrigger className="bg-white">
+          <SelectTrigger className="bg-white border-gray-300">
             <SelectValue placeholder="Select your current level of study" />
           </SelectTrigger>
           <SelectContent>
@@ -64,7 +64,7 @@ const AcademicInfoFields = ({
         </Select>
       </FormSection>
 
-      <FormSection id="amount" label="Grant Amount (₦20,000 - ₦100,000)">
+      <FormSection id="amount" label="Grant Amount (₦20,000 - ₦100,000)" required>
         <Input
           id="amount"
           name="amount"
@@ -72,31 +72,31 @@ const AcademicInfoFields = ({
           min="20000"
           max="100000"
           placeholder="Enter amount between ₦20,000 - ₦100,000"
-          className="bg-white"
+          className="bg-white border-gray-300"
           value={formData.amount}
           onChange={handleInputChange}
           required
         />
       </FormSection>
 
-      <FormSection id="passport" label="Upload Passport Photograph">
+      <FormSection id="passport" label="Upload Passport Photograph" required>
         <Input
           id="passport"
           name="passport"
           type="file"
           accept="image/*"
-          className="bg-white"
+          className="bg-white border-gray-300"
           onChange={handleFileChange}
           required
         />
       </FormSection>
 
-      <FormSection id="reason" label="Why do you need this grant?">
+      <FormSection id="reason" label="Why do you need this grant?" required>
         <Textarea
           id="reason"
           name="reason"
           placeholder="Explain why you need this grant..."
-          className="bg-white resize-none min-h-[150px]"
+          className="bg-white border-gray-300 resize-none min-h-[150px]"
           value={formData.reason}
           onChange={handleInputChange}
           required

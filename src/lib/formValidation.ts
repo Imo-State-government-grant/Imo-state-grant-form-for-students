@@ -1,8 +1,7 @@
-
 import { GrantFormData } from "@/hooks/useGrantForm";
-import { ToastType } from "@/components/ui/use-toast";
+import { ToastFunction } from "@/types/toast";
 
-export const validateGrantForm = (formData: GrantFormData, toast: (props: ToastType) => void): boolean => {
+export const validateGrantForm = (formData: GrantFormData, toast: ToastFunction): boolean => {
   // Check required fields
   const requiredFields = [
     "fullName",

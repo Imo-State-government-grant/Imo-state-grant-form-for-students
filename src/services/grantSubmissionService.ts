@@ -1,11 +1,11 @@
 
 import { GrantFormData } from "@/hooks/useGrantForm";
 import { getSupabaseClient, isSupabaseConnected } from "@/lib/supabase";
-import { ToastType } from "@/components/ui/use-toast";
+import { ToastFunction } from "@/types/toast";
 
 export const submitGrantApplication = async (
   formData: GrantFormData, 
-  toast: (props: ToastType) => void
+  toast: ToastFunction
 ): Promise<boolean> => {
   try {
     // Check if Supabase is connected before proceeding

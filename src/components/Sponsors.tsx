@@ -22,6 +22,7 @@ const Sponsors = () => {
               alt={sponsor.name} 
               className="max-h-12 max-w-full object-contain"
               onError={(e) => {
+                console.log(`Image failed to load: ${sponsor.src}`);
                 // Fallback to a placeholder if image fails to load
                 (e.target as HTMLImageElement).src = "/placeholder.svg";
               }}

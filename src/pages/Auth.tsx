@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "lucide-react";
-import { Google } from "lucide-react";
+import { Github } from "lucide-react"; // Using Github icon instead of Google as a temporary replacement
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -175,7 +175,7 @@ const Auth = () => {
               onClick={handleGoogleSignIn}
               disabled={googleLoading}
             >
-              <Google className="mr-2 h-5 w-5" />
+              <Github className="mr-2 h-5 w-5" /> {/* Using GitHub icon instead of Google */}
               {googleLoading ? "Connecting..." : "Sign in with Google"}
             </Button>
 

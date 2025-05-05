@@ -86,17 +86,22 @@ const Auth = () => {
         }
       });
       
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes("provider is not enabled")) {
+          throw new Error("Google login is not configured. Please set up Google provider in Supabase Authentication settings.");
+        }
+        throw error;
+      }
       
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "An error occurred signing in with Google",
+        title: "Google Sign-In Error",
+        description: error.message || "Failed to sign in with Google. Please try email/password login instead.",
         variant: "destructive",
       });
       setGoogleLoading(false);
     }
-    // No need for finally block as the page will redirect
+    // No need for finally block as the page will redirect on success
   };
 
   return (

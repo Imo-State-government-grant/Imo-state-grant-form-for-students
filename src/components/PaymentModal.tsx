@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -19,10 +19,10 @@ interface PaymentModalProps {
 }
 
 const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentModalProps) => {
-  const [cardNumber, setCardNumber] = React.useState("");
-  const [expiryDate, setExpiryDate] = React.useState("");
-  const [cvv, setCvv] = React.useState("");
-  const [processing, setProcessing] = React.useState(false);
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [processing, setProcessing] = useState(false);
   
   // Format card number with spaces
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,12 +42,12 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
     }
   };
 
-  // Mock payment process
+  // Mock initiate Paystack payment
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setProcessing(true);
     
-    // Simulate payment processing
+    // Simulate Paystack payment initiation
     setTimeout(() => {
       setProcessing(false);
       onPaymentComplete();
@@ -58,7 +58,7 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Complete Payment</DialogTitle>
+          <DialogTitle className="text-xl font-bold">Pay with Paystack</DialogTitle>
           <DialogDescription>
             Application fee: ₦2,000
           </DialogDescription>
@@ -120,11 +120,19 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
           
           <Button 
             type="submit" 
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
+            className="w-full bg-[#0BA4DB] hover:bg-[#0994C8] text-white"
             disabled={processing}
           >
-            {processing ? "Processing..." : "Pay ₦2,000"}
+            {processing ? "Processing..." : "Pay ₦2,000 with Paystack"}
           </Button>
+          
+          <div className="flex justify-center mt-2">
+            <img 
+              src="https://paystack.com/assets/payment/badges/powered-by-paystack.png" 
+              alt="Powered by Paystack" 
+              className="h-8" 
+            />
+          </div>
           
           <p className="text-xs text-center text-gray-500">
             This is a demo payment form. No actual payment will be processed.

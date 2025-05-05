@@ -16,12 +16,17 @@ const Sponsors = () => {
       <p className="text-center text-sm text-gray-500 mb-4">Sponsored by</p>
       <div className="flex flex-wrap justify-center items-center gap-6 px-4">
         {sponsors.map((sponsor, index) => (
-          <img 
-            key={index}
-            src={sponsor.src} 
-            alt={sponsor.name} 
-            className="h-12 w-auto object-contain"
-          />
+          <div key={index} className="h-12 w-24 flex items-center justify-center">
+            <img 
+              src={sponsor.src} 
+              alt={sponsor.name} 
+              className="max-h-12 max-w-full object-contain"
+              onError={(e) => {
+                // Fallback to a placeholder if image fails to load
+                (e.target as HTMLImageElement).src = "/placeholder.svg";
+              }}
+            />
+          </div>
         ))}
       </div>
     </div>

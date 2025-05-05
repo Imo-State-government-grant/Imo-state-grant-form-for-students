@@ -5,13 +5,11 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { User } from "lucide-react";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -76,34 +74,6 @@ const Auth = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setGoogleLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-      
-      if (error) {
-        if (error.message.includes("provider is not enabled")) {
-          throw new Error("Google login is not configured. Please set up Google provider in Supabase Authentication settings.");
-        }
-        throw error;
-      }
-      
-    } catch (error: any) {
-      toast({
-        title: "Google Sign-In Error",
-        description: error.message || "Failed to sign in with Google. Please try email/password login instead.",
-        variant: "destructive",
-      });
-      setGoogleLoading(false);
-    }
-    // No need for finally block as the page will redirect on success
-  };
-
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
       <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center" style={{ opacity: 0.05 }}>
@@ -161,25 +131,6 @@ const Auth = () => {
               disabled={loading}
             >
               {loading ? "Processing..." : isLogin ? "Login" : "Register"}
-            </Button>
-            
-            <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-              </div>
-            </div>
-            
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full py-6 text-lg font-medium border-gray-300 hover:bg-gray-50"
-              onClick={handleGoogleSignIn}
-              disabled={googleLoading}
-            >
-              {googleLoading ? "Connecting..." : "Sign in with Google"}
             </Button>
 
             <p className="text-center mt-4">

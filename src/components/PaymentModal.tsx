@@ -42,12 +42,30 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
     }
   };
 
-  // Mock initiate Paystack payment
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Initiate Paystack payment
+  const handlePaystackPayment = () => {
     setProcessing(true);
     
-    // Simulate Paystack payment initiation
+    // Here you would normally integrate with Paystack's API
+    // For demo purposes, we'll simulate a successful payment after a delay
+    
+    // In a real-world scenario, you'd use the Paystack SDK or API
+    // Example of what this could look like (not actual implementation):
+    // const paystack = new PaystackPop();
+    // paystack.newTransaction({
+    //   key: 'pk_test_your_public_key',
+    //   email: formData.email,
+    //   amount: 200000, // Amount in kobo (₦2,000)
+    //   onSuccess: function(response) {
+    //     setProcessing(false);
+    //     onPaymentComplete();
+    //   },
+    //   onCancel: function() {
+    //     setProcessing(false);
+    //   }
+    // });
+    
+    // For demo purposes, simulate successful payment
     setTimeout(() => {
       setProcessing(false);
       onPaymentComplete();
@@ -64,7 +82,7 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+        <div className="space-y-4 pt-4">
           <div className="space-y-2">
             <label htmlFor="cardName" className="text-sm font-medium">
               Cardholder Name
@@ -78,49 +96,22 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="cardNumber" className="text-sm font-medium">
-              Card Number
+            <label htmlFor="cardEmail" className="text-sm font-medium">
+              Email Address
             </label>
             <Input 
-              id="cardNumber" 
-              placeholder="0000 0000 0000 0000" 
-              value={cardNumber}
-              onChange={handleCardNumberChange}
+              id="cardEmail" 
+              type="email"
+              placeholder="Email address" 
               required 
+              defaultValue={formData.email}
+              readOnly
             />
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="expiryDate" className="text-sm font-medium">
-                Expiry Date
-              </label>
-              <Input 
-                id="expiryDate" 
-                placeholder="MM/YY" 
-                value={expiryDate}
-                onChange={handleExpiryDateChange}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="cvv" className="text-sm font-medium">
-                CVV
-              </label>
-              <Input 
-                id="cvv" 
-                placeholder="123" 
-                maxLength={3}
-                value={cvv}
-                onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))}
-                required 
-              />
-            </div>
-          </div>
-          
           <Button 
-            type="submit" 
-            className="w-full bg-[#0BA4DB] hover:bg-[#0994C8] text-white"
+            onClick={handlePaystackPayment} 
+            className="w-full py-6 text-lg font-bold bg-[#0BA4DB] hover:bg-[#0994C8] text-white"
             disabled={processing}
           >
             {processing ? "Processing..." : "Pay ₦2,000 with Paystack"}
@@ -128,7 +119,7 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
           
           <div className="flex justify-center mt-2">
             <img 
-              src="https://paystack.com/assets/payment/badges/powered-by-paystack.png" 
+              src="https://assets.paystack.com/assets/img/logos/powered-by-paystack.svg" 
               alt="Powered by Paystack" 
               className="h-8" 
             />
@@ -137,7 +128,7 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
           <p className="text-xs text-center text-gray-500">
             This is a demo payment form. No actual payment will be processed.
           </p>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

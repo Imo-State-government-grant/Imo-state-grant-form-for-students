@@ -88,7 +88,7 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
         metadata: {
           application_id: reference,
           full_name: formData.fullName,
-          school: formData.institution
+          school: formData.schoolName // Fixed: changed from institution to schoolName to match GrantFormData type
         },
         onSuccess: function() {
           setProcessing(false);

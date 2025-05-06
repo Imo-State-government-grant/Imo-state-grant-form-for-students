@@ -54,7 +54,7 @@ export const submitGrantApplication = async (
         phone_number: formData.phoneNumber,
         email: formData.email,
         nin: formData.nin,
-        bvn: formData.bvn,
+        bvn: "N/A", // Set to N/A since we removed the field
         school_name: formData.schoolName,
         study_level: formData.studyLevel,
         passport_url: passportUrl,

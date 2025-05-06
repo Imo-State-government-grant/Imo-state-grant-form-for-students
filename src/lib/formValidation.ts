@@ -1,3 +1,4 @@
+
 import { GrantFormData } from "@/hooks/useGrantForm";
 import { ToastFunction } from "@/types/toast";
 
@@ -8,7 +9,6 @@ export const validateGrantForm = (formData: GrantFormData, toast: ToastFunction)
     "phoneNumber",
     "email",
     "nin",
-    "bvn",
     "schoolName",
     "studyLevel",
     "accountNumber",

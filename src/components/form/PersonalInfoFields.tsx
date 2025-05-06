@@ -9,7 +9,6 @@ interface PersonalInfoFieldsProps {
     phoneNumber: string;
     email: string;
     nin: string;
-    bvn: string;
   };
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -61,18 +60,6 @@ const PersonalInfoFields = ({ formData, handleInputChange }: PersonalInfoFieldsP
           placeholder="Enter your NIN"
           className="bg-white border-gray-300"
           value={formData.nin}
-          onChange={handleInputChange}
-          required
-        />
-      </FormSection>
-
-      <FormSection id="bvn" label="Bank Verification Number (BVN)" required>
-        <Input
-          id="bvn"
-          name="bvn"
-          placeholder="Enter your BVN"
-          className="bg-white border-gray-300"
-          value={formData.bvn}
           onChange={handleInputChange}
           required
         />

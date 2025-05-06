@@ -46,7 +46,8 @@ const Auth = () => {
         
         navigate("/");
       } else {
-        const { error } = await supabase.auth.signUp({
+        // Registration flow - immediately signs in after successful registration
+        const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -56,12 +57,22 @@ const Auth = () => {
           }
         });
         
-        if (error) throw error;
+        if (signUpError) throw signUpError;
+        
+        // Automatically sign in after registration
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+        
+        if (signInError) throw signInError;
         
         toast({
           title: "Registration successful",
-          description: "Please check your email for a confirmation link",
+          description: "Welcome to Imo State Student Grant Application",
         });
+        
+        navigate("/");
       }
     } catch (error: any) {
       toast({

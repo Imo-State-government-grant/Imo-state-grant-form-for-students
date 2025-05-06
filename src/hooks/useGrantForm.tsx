@@ -8,7 +8,6 @@ export type GrantFormData = {
   phoneNumber: string;
   email: string;
   nin: string;
-  bvn: string;
   schoolName: string;
   studyLevel: string;
   passport: File | null;
@@ -28,7 +27,6 @@ export const useGrantForm = () => {
     phoneNumber: "",
     email: "",
     nin: "",
-    bvn: "",
     schoolName: "",
     studyLevel: "",
     passport: null,
@@ -73,7 +71,6 @@ export const useGrantForm = () => {
       phoneNumber: "",
       email: "",
       nin: "",
-      bvn: "",
       schoolName: "",
       studyLevel: "",
       passport: null,

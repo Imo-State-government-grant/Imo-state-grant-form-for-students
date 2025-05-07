@@ -24,9 +24,7 @@ const Sponsors = () => {
               alt={sponsor.name} 
               className="max-h-12 max-w-full object-contain"
               onError={(e) => {
-                // For debugging
-                console.log(`Image failed to load: ${sponsor.src}`);
-                // Use state logo as fallback since that's the only image we have
+                // Use state logo as fallback
                 (e.target as HTMLImageElement).src = "/lovable-uploads/4e9380de-3679-400a-a35e-bba29bcc581e.png";
               }}
             />

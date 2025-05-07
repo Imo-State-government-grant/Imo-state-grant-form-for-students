@@ -1,22 +1,24 @@
 
-import React from 'react';
+import React from "react";
+
+interface Sponsor {
+  name: string;
+  src: string;
+}
+
+const sponsors: Sponsor[] = [
+  { name: "Ministry of Education", src: "/lovable-uploads/4e9380de-3679-400a-a35e-bba29bcc581e.png" },
+  { name: "Imo State Government", src: "/lovable-uploads/4e9380de-3679-400a-a35e-bba29bcc581e.png" },
+  { name: "Student Affairs", src: "/lovable-uploads/4e9380de-3679-400a-a35e-bba29bcc581e.png" },
+];
 
 const Sponsors = () => {
-  const sponsors = [
-    { name: 'Microfinance Opportunities', src: '/lovable-uploads/6a5ac191-a017-470a-a00f-a8c6e3fbbbf8.png' },
-    { name: 'Access Bank', src: '/lovable-uploads/ec9630cb-816b-499e-af01-09a35a16c134.png' },
-    { name: 'UBA', src: '/lovable-uploads/b7546141-2868-417a-963e-855b4fc47685.png' },
-    { name: 'Fidelity Bank', src: '/lovable-uploads/a7bb12d7-b316-4e6d-99da-f81ac7a1f5c4.png' },
-    { name: 'First Bank', src: '/lovable-uploads/9c8bfd16-2c04-4223-a903-f1c300123784.png' },
-    { name: 'Zenith Bank', src: '/lovable-uploads/4ed38046-1afb-4cc5-aa03-f69dc62ddf4b.png' },
-  ];
-
   return (
-    <div className="mt-12 mb-6">
-      <p className="text-center text-sm text-gray-500 mb-4">Sponsored by</p>
-      <div className="flex flex-wrap justify-center items-center gap-6 px-4">
+    <div className="mt-8">
+      <p className="text-center font-medium mb-4">Our Sponsors</p>
+      <div className="flex flex-wrap justify-center gap-8">
         {sponsors.map((sponsor, index) => (
-          <div key={index} className="h-12 w-24 flex items-center justify-center">
+          <div key={index} className="flex items-center justify-center w-32 h-20 bg-white p-2 rounded shadow-sm">
             <img 
               src={sponsor.src} 
               alt={sponsor.name} 
@@ -24,8 +26,8 @@ const Sponsors = () => {
               onError={(e) => {
                 // For debugging
                 console.log(`Image failed to load: ${sponsor.src}`);
-                // Use a placeholder image if the original source fails
-                (e.target as HTMLImageElement).src = "https://via.placeholder.com/100x50?text=Sponsor";
+                // Use state logo as fallback since that's the only image we have
+                (e.target as HTMLImageElement).src = "/lovable-uploads/4e9380de-3679-400a-a35e-bba29bcc581e.png";
               }}
             />
           </div>

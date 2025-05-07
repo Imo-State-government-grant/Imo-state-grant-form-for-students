@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 interface AuthFormProps {
   isLogin: boolean;
@@ -16,13 +17,43 @@ const AuthForm = ({ isLogin, loading, onToggleMode }: AuthFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { toast } = useToast();
+  const navigate = useNavigate();
   
+  const cleanupAuthState = () => {
+    // Remove standard auth tokens
+    localStorage.removeItem('supabase.auth.token');
+    // Remove all Supabase auth keys
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        localStorage.removeItem(key);
+      }
+    });
+    // Remove from sessionStorage if in use
+    Object.keys(sessionStorage || {}).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     try {
+      // Clean up existing auth state before attempting auth
+      cleanupAuthState();
+      
+      // Attempt global sign out
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+      }
+      
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -35,6 +66,9 @@ const AuthForm = ({ isLogin, loading, onToggleMode }: AuthFormProps) => {
           title: "Login successful",
           description: "Welcome back to Imo State Student Grant Application",
         });
+        
+        // Force page reload to ensure clean auth state
+        window.location.href = '/';
       } else {
         // Registration flow - immediately signs in after successful registration
         const { error: signUpError } = await supabase.auth.signUp({
@@ -61,6 +95,9 @@ const AuthForm = ({ isLogin, loading, onToggleMode }: AuthFormProps) => {
           title: "Registration successful",
           description: "Welcome to Imo State Student Grant Application",
         });
+        
+        // Force page reload
+        window.location.href = '/';
       }
     } catch (error: any) {
       toast({
@@ -68,6 +105,8 @@ const AuthForm = ({ isLogin, loading, onToggleMode }: AuthFormProps) => {
         description: error.message || "An error occurred during authentication",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -116,9 +155,9 @@ const AuthForm = ({ isLogin, loading, onToggleMode }: AuthFormProps) => {
       <Button
         type="submit"
         className="w-full py-6 text-lg font-bold bg-black hover:bg-gray-800 text-white"
-        disabled={loading}
+        disabled={isSubmitting || loading}
       >
-        {loading ? "Processing..." : isLogin ? "Login" : "Register"}
+        {isSubmitting ? "Processing..." : isLogin ? "Login" : "Register"}
       </Button>
 
       <p className="text-center mt-4">

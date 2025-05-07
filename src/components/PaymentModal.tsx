@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GrantFormData } from "@/hooks/useGrantForm";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 declare global {
   interface Window {
@@ -27,18 +28,23 @@ interface PaymentModalProps {
 
 const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentModalProps) => {
   const [processing, setProcessing] = useState(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
   const { toast } = useToast();
   
   // Optimize the Paystack script loading
   useEffect(() => {
     // Check if script is already loaded
-    if (window.PaystackPop) return;
+    if (window.PaystackPop) {
+      setScriptLoaded(true);
+      return;
+    }
     
     const script = document.createElement('script');
     script.src = 'https://js.paystack.co/v2/inline.js';
     script.async = true;
     script.onload = () => {
       console.log('Paystack script loaded successfully');
+      setScriptLoaded(true);
     };
     script.onerror = () => {
       console.error('Failed to load Paystack script');
@@ -59,11 +65,24 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
   }, [toast]);
 
   // Improved Paystack payment handler
-  const handlePaystackPayment = () => {
+  const handlePaystackPayment = async () => {
     if (processing) return; // Prevent multiple clicks
     setProcessing(true);
     
-    if (!window.PaystackPop) {
+    // Check if user is authenticated
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      toast({
+        title: "Authentication Required",
+        description: "Please login to proceed with payment",
+        variant: "destructive",
+      });
+      setProcessing(false);
+      onClose();
+      return;
+    }
+    
+    if (!scriptLoaded || !window.PaystackPop) {
       toast({
         title: "Payment Service Unavailable",
         description: "The payment service is currently unavailable. Please try again later.",
@@ -78,7 +97,7 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
       const reference = `grant-app-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       
       paystack.newTransaction({
-        key: 'pk_live_af863ca7dcc4f225cf99bc4d863c2bbd2d4e5443', // Updated Paystack public key
+        key: 'pk_live_af863ca7dcc4f225cf99bc4d863c2bbd2d4e5443',
         email: formData.email,
         amount: 200000, // Amount in kobo (₦2,000)
         currency: 'NGN',
@@ -88,7 +107,8 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
         metadata: {
           application_id: reference,
           full_name: formData.fullName,
-          school: formData.schoolName // Fixed: changed from institution to schoolName to match GrantFormData type
+          user_id: data.session.user.id,
+          school: formData.schoolName
         },
         onSuccess: function() {
           setProcessing(false);
@@ -96,6 +116,22 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
             title: "Payment Successful",
             description: "Your application fee has been received. Your reference is: " + reference,
           });
+          
+          // Log payment in database
+          supabase.from('grant_applications')
+            .update({ 
+              payment_status: 'completed', 
+              payment_reference: reference,
+              payment_date: new Date().toISOString(),
+              payment_amount: 2000 // ₦2,000
+            })
+            .eq('user_id', data.session.user.id)
+            .then(({ error }) => {
+              if (error) {
+                console.error("Failed to update payment status:", error);
+              }
+            });
+            
           onPaymentComplete();
         },
         onCancel: function() {
@@ -161,7 +197,7 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
           <Button 
             onClick={handlePaystackPayment} 
             className="w-full py-6 text-lg font-bold bg-[#0BA4DB] hover:bg-[#0994C8] text-white"
-            disabled={processing}
+            disabled={processing || !scriptLoaded}
           >
             {processing ? "Processing..." : "Pay ₦2,000 with Paystack"}
           </Button>

@@ -17,7 +17,13 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        setSession(session);
+        if (event === 'SIGNED_IN') {
+          setSession(session);
+        } else if (event === 'SIGNED_OUT') {
+          setSession(null);
+          navigate('/auth');
+        }
+        
         setLoading(false);
       }
     );
@@ -29,7 +35,7 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (!loading && !session) {

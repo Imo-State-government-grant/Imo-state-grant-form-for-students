@@ -7,7 +7,7 @@ import AuthCard from "@/components/auth/AuthCard";
 import AuthForm from "@/components/auth/AuthForm";
 
 const Auth = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isLogin, setIsLogin] = useState(true);
   
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ const Auth = () => {
       if (data.session) {
         navigate('/');
       }
+      setLoading(false);
     };
     
     checkUser();
@@ -27,6 +28,14 @@ const Auth = () => {
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    );
+  }
 
   return (
     <AuthBackground>

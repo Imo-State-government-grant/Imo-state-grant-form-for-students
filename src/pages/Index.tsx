@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,8 @@ const Index = () => {
           </div>
         </div>
       </div>
+      
+      <Toaster />
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { GrantFormData } from "@/hooks/useGrantForm";
 import PaystackPaymentHandler from './PaystackPaymentHandler';
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle, CheckCircle, RefreshCcw } from "lucide-react";
 
 interface PaymentFormProps {
   formData: GrantFormData;
@@ -63,15 +63,16 @@ const PaymentForm = ({
         <Alert variant="destructive" className="mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Payment Error</AlertTitle>
-          <AlertDescription>
+          <AlertDescription className="flex flex-col gap-2">
             {lastError}
             {showRetryOption && (
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="mt-2" 
+                className="mt-2 flex items-center gap-2 self-start" 
                 onClick={handlePaymentRetry}
               >
+                <RefreshCcw className="h-4 w-4" />
                 Try Again
               </Button>
             )}
@@ -135,9 +136,11 @@ const PaymentForm = ({
         />
       </div>
       
-      <p className="text-xs text-center text-gray-500 mt-2">
-        Your payment information is secure. Transaction ID: {`grant-${Date.now().toString().slice(-6)}`}
-      </p>
+      <div className="text-xs text-center text-gray-500 mt-2 space-y-1">
+        <p>Your payment information is secure.</p>
+        <p>Transaction ID: {`grant-${Date.now().toString().slice(-6)}`}</p>
+        <p>Having issues? Try refreshing the page or using a different payment option.</p>
+      </div>
     </div>
   );
 };

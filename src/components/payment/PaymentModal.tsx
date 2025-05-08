@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,9 @@ import { GrantFormData } from "@/hooks/useGrantForm";
 import PaystackScriptLoader from './PaystackScriptLoader';
 import PaymentForm from './PaymentForm';
 import { Progress } from "@/components/ui/progress";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, RefreshCcw } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 interface PaymentModalProps {
   open: boolean;
@@ -26,6 +27,7 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
   const [scriptError, setScriptError] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [paymentInitiated, setPaymentInitiated] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   
   const handleScriptLoaded = () => {
     setScriptLoaded(true);
@@ -43,8 +45,14 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
     setPaymentInitiated(true);
   };
 
+  const handleRefreshScript = () => {
+    setScriptError(false);
+    setLoadingProgress(10);
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   // Simulate loading progress
-  React.useEffect(() => {
+  useEffect(() => {
     if (open && !scriptLoaded && !scriptError) {
       const interval = setInterval(() => {
         setLoadingProgress((prev) => {
@@ -58,10 +66,10 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
       
       return () => clearInterval(interval);
     }
-  }, [open, scriptLoaded, scriptError]);
+  }, [open, scriptLoaded, scriptError, refreshTrigger]);
 
   // Reset state when modal closes
-  React.useEffect(() => {
+  useEffect(() => {
     if (!open) {
       setTimeout(() => {
         setPaymentInitiated(false);
@@ -91,14 +99,24 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
         {scriptError && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Failed to load payment system. Please check your internet connection and try again.
+            <AlertDescription className="flex flex-col gap-2">
+              <span>Failed to load payment system. Please check your internet connection and try again.</span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleRefreshScript}
+                className="flex items-center gap-2 self-start"
+              >
+                <RefreshCcw className="h-4 w-4" />
+                Retry Loading
+              </Button>
             </AlertDescription>
           </Alert>
         )}
         
         {open && (
           <PaystackScriptLoader 
+            key={`paystack-loader-${refreshTrigger}`}
             onScriptLoaded={handleScriptLoaded}
             onScriptError={handleScriptError} 
           />

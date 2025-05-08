@@ -13,7 +13,7 @@ const PaystackScriptLoader = ({ onScriptLoaded, onScriptError }: PaystackScriptL
   useEffect(() => {
     // Track script loading attempts
     let attempts = 0;
-    const maxAttempts = 2;
+    const maxAttempts = 3; // Increased from 2 to 3
     
     const loadScript = () => {
       // Check if script is already loaded
@@ -27,7 +27,7 @@ const PaystackScriptLoader = ({ onScriptLoaded, onScriptError }: PaystackScriptL
       console.log(`Loading Paystack script (attempt ${attempts})`);
       
       const script = document.createElement('script');
-      script.src = 'https://js.paystack.co/v2/inline.js';
+      script.src = 'https://js.paystack.co/v2/inline.js'; // Make sure this is the correct URL
       script.async = true;
       
       // Create a timeout to detect script loading issues
@@ -43,17 +43,36 @@ const PaystackScriptLoader = ({ onScriptLoaded, onScriptError }: PaystackScriptL
             onScriptError();
             toast({
               title: "Payment Service Timeout",
-              description: "The payment service is taking too long to load. Please try again later.",
+              description: "The payment service is taking too long to load. Please try again later or check your internet connection.",
               variant: "destructive",
             });
           }
         }
-      }, 10000); // 10 seconds timeout
+      }, 15000); // Increased from 10 to 15 seconds
       
       script.onload = () => {
         console.log('Paystack script loaded successfully');
         clearTimeout(timeoutId);
-        onScriptLoaded();
+        
+        // Verify that PaystackPop is actually available
+        if (window.PaystackPop) {
+          console.log('PaystackPop object is available');
+          onScriptLoaded();
+        } else {
+          console.error('Script loaded but PaystackPop not available');
+          if (attempts < maxAttempts) {
+            console.log(`Retrying script load (${attempts}/${maxAttempts})`);
+            document.body.removeChild(script);
+            loadScript();
+          } else {
+            onScriptError();
+            toast({
+              title: "Payment Service Error",
+              description: "Failed to initialize payment service. Please try again later.",
+              variant: "destructive",
+            });
+          }
+        }
       };
       
       script.onerror = () => {
@@ -68,7 +87,7 @@ const PaystackScriptLoader = ({ onScriptLoaded, onScriptError }: PaystackScriptL
           onScriptError();
           toast({
             title: "Payment Service Error",
-            description: "Failed to load payment service. Please try again later.",
+            description: "Failed to load payment service. Please check your internet connection and try again.",
             variant: "destructive",
           });
         }

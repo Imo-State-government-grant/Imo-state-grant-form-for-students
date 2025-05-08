@@ -30,6 +30,7 @@ const PaystackPaymentHandler = ({
   const { toast } = useToast();
   const [processing, setProcessing] = React.useState(false);
   const [paymentInitialized, setPaymentInitialized] = React.useState(false);
+  const [retryAttempt, setRetryAttempt] = React.useState(0);
   
   const handlePaystackPayment = async () => {
     if (processing || paymentInitialized || disabled) return; // Prevent multiple clicks or re-initialization
@@ -139,6 +140,7 @@ const PaystackPaymentHandler = ({
         console.error("Paystack initialization error:", paystackError);
         setProcessing(false);
         setPaymentInitialized(false);
+        setRetryAttempt(prev => prev + 1);
         
         const errorMessage = paystackError?.message || "Failed to initialize payment";
         toast({
@@ -153,6 +155,7 @@ const PaystackPaymentHandler = ({
       console.error("Payment process error:", error);
       setProcessing(false);
       setPaymentInitialized(false);
+      setRetryAttempt(prev => prev + 1);
       
       const errorMessage = error?.message || "There was a problem processing your payment";
       toast({

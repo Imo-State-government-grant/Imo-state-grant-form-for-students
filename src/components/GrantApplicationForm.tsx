@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import PersonalInfoFields from "./form/PersonalInfoFields";
 import AcademicInfoFields from "./form/AcademicInfoFields";
@@ -8,7 +7,7 @@ import SuccessMessage from "./form/SuccessMessage";
 import { useGrantForm } from "@/hooks/useGrantForm";
 import { validateGrantForm } from "@/lib/formValidation";
 import { submitGrantApplication } from "@/services/grantSubmissionService";
-import PaymentModal from "./PaymentModal";
+import PaymentModal from "./payment/PaymentModal";
 
 const GrantApplicationForm = () => {
   const {

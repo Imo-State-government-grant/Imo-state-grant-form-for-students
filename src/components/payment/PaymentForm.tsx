@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { GrantFormData } from "@/hooks/useGrantForm";
 import PaystackPaymentHandler from './PaystackPaymentHandler';
+import { AlertCircle, CheckCircle } from "lucide-react";
 
 interface PaymentFormProps {
   formData: GrantFormData;
@@ -12,6 +13,8 @@ interface PaymentFormProps {
   onClose: () => void;
   scriptLoaded: boolean;
   scriptError: boolean;
+  onPaymentInitiate?: () => void;
+  paymentInitiated?: boolean;
 }
 
 const PaymentForm = ({ 
@@ -19,16 +22,68 @@ const PaymentForm = ({
   onPaymentComplete, 
   onClose, 
   scriptLoaded, 
-  scriptError 
+  scriptError,
+  onPaymentInitiate,
+  paymentInitiated
 }: PaymentFormProps) => {
+  const [paymentAttempts, setPaymentAttempts] = useState(0);
+  const [lastError, setLastError] = useState<string | null>(null);
+  
+  const handlePaymentError = (errorMessage: string) => {
+    setLastError(errorMessage);
+    setPaymentAttempts(prev => prev + 1);
+  };
+  
+  const handlePaymentRetry = () => {
+    setLastError(null);
+  };
+
+  const handlePaymentInitiate = () => {
+    setLastError(null);
+    if (onPaymentInitiate) {
+      onPaymentInitiate();
+    }
+  };
+
+  const showRetryOption = paymentAttempts > 0 && lastError && !paymentInitiated;
+
   return (
     <div className="space-y-4 pt-4">
       {scriptError && (
         <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Payment Service Error</AlertTitle>
+          <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             We're having trouble connecting to our payment provider. 
             Please refresh the page or try again later.
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {lastError && !paymentInitiated && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Payment Error</AlertTitle>
+          <AlertDescription>
+            {lastError}
+            {showRetryOption && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-2" 
+                onClick={handlePaymentRetry}
+              >
+                Try Again
+              </Button>
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {!lastError && paymentAttempts > 0 && !paymentInitiated && (
+        <Alert className="mb-4 bg-green-50 border-green-200">
+          <CheckCircle className="h-4 w-4 text-green-500" />
+          <AlertDescription className="text-green-700">
+            Payment gateway ready. You can proceed with your payment.
           </AlertDescription>
         </Alert>
       )}
@@ -42,6 +97,7 @@ const PaymentForm = ({
           placeholder="Name on card" 
           required 
           defaultValue={formData.fullName}
+          disabled={paymentInitiated}
         />
       </div>
       
@@ -56,6 +112,7 @@ const PaymentForm = ({
           required 
           defaultValue={formData.email}
           readOnly
+          disabled={paymentInitiated}
         />
       </div>
       
@@ -63,8 +120,11 @@ const PaymentForm = ({
         formData={formData}
         onSuccess={onPaymentComplete}
         onCancel={onClose}
+        onError={handlePaymentError}
+        onInitiate={handlePaymentInitiate}
         scriptLoaded={scriptLoaded}
         scriptError={scriptError}
+        disabled={paymentInitiated}
       />
       
       <div className="flex justify-center mt-2">

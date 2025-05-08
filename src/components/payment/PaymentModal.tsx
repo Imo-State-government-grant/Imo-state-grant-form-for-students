@@ -10,12 +10,9 @@ import {
 import { GrantFormData } from "@/hooks/useGrantForm";
 import PaystackScriptLoader from './PaystackScriptLoader';
 import PaymentForm from './PaymentForm';
-
-declare global {
-  interface Window {
-    PaystackPop: any;
-  }
-}
+import { Progress } from "@/components/ui/progress";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface PaymentModalProps {
   open: boolean;
@@ -27,16 +24,50 @@ interface PaymentModalProps {
 const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentModalProps) => {
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [scriptError, setScriptError] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [paymentInitiated, setPaymentInitiated] = useState(false);
   
   const handleScriptLoaded = () => {
     setScriptLoaded(true);
     setScriptError(false);
+    setLoadingProgress(100);
   };
   
   const handleScriptError = () => {
     setScriptError(true);
     setScriptLoaded(false);
+    setLoadingProgress(0);
   };
+
+  const handlePaymentInitiate = () => {
+    setPaymentInitiated(true);
+  };
+
+  // Simulate loading progress
+  React.useEffect(() => {
+    if (open && !scriptLoaded && !scriptError) {
+      const interval = setInterval(() => {
+        setLoadingProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(interval);
+            return prev;
+          }
+          return prev + 10;
+        });
+      }, 300);
+      
+      return () => clearInterval(interval);
+    }
+  }, [open, scriptLoaded, scriptError]);
+
+  // Reset state when modal closes
+  React.useEffect(() => {
+    if (!open) {
+      setTimeout(() => {
+        setPaymentInitiated(false);
+      }, 300);
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -47,6 +78,24 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
             Application fee: ₦2,000
           </DialogDescription>
         </DialogHeader>
+        
+        {!scriptLoaded && !scriptError && (
+          <div className="space-y-2">
+            <p className="text-sm text-center text-muted-foreground">
+              {loadingProgress < 100 ? "Loading payment system..." : "Ready to process payment"}
+            </p>
+            <Progress value={loadingProgress} />
+          </div>
+        )}
+        
+        {scriptError && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Failed to load payment system. Please check your internet connection and try again.
+            </AlertDescription>
+          </Alert>
+        )}
         
         {open && (
           <PaystackScriptLoader 
@@ -61,6 +110,8 @@ const PaymentModal = ({ open, onClose, onPaymentComplete, formData }: PaymentMod
           onClose={onClose}
           scriptLoaded={scriptLoaded}
           scriptError={scriptError}
+          onPaymentInitiate={handlePaymentInitiate}
+          paymentInitiated={paymentInitiated}
         />
       </DialogContent>
     </Dialog>
